@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Baby moment</title>
+
+
+
+<link rel="stylesheet" href="scripts/jquery.mobile-1.0a4.1.css" />
+<link rel="stylesheet" href="scripts/global.css" />
+<link rel="stylesheet" href="androidonly.css" />    
+<script type="text/javascript" charset="utf-8" src="scripts/jquery-1.5.1.min.js"></script> 
+<script type="text/javascript" charset="utf-8" src="scripts/jquery.mobile-1.0a4.1.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/sencha-touch.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/date.format.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/date.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/Reform.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/underscore.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/phonegap.0.9.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="scripts/SystemNotification.js"></script>
+<script type="text/javascript" src="http://sienna.cloudfoundry.com/socket.io/socket.io.js"></script>  
+<script type="text/javascript" charset="utf-8" src="scripts/app.js"></script> 
+
+<script>		
+
+	var cc = new Sienna();
+	document.addEventListener("resume", function() {		
+	}, false);
+	
+	
+	$(document).ready(function () {		
+		
+		
+		$('#btLogin').click(function () {	
+			Users.signin();		
+		});
+		
+		$('#btJoin').click(function () {				
+			Users.join();
+		});
+		
+		
+		$('#btNewMoment').click(function() {				
+			var date = new Date();					
+			$("#date").val(dateFormat(date, 'default'));
+			$("#tbMomentDescription").val("");
+			$("#takenPic").attr("src",""); 	
+		}); 
+		
+		$("#btPhoto").click(function(){
+			cc.takePhoto();
+		});
+		
+		$("#btAttachPhoto").click(function(){
+			cc.attachPhoto();
+		});
+		
+		
+		
+		$("#btSaveMoment").click(function(){
+			cc.addMoment();
+		});		
+		
+		$("#btAddChild").click(function(){
+			cc.addChild();
+		});	
+		
+		$('#btSignout').click(function () {				
+			Users.signOut();
+		});
+		
+		$("#btsharePopShare").click(function() {
+			Users.share();
+		});				
+		
+	});		
+	
+
+</script>
+
+</head>
+<body>
+
+<div data-role="page" id="home">
+	<div data-role="header" data-backbtn="false"> 
+		<a data-role="button" id="btSignout" data-icon="delete" data-iconpos="notext" data-rel="back">sign out</a>  	   
+	    <h1>Baby moment</h1>  	   	 
+	    <a href="addChildPop" data-rel="dialog" data-role="button" data-icon="plus" data-iconpos="notext">Add Child</a>	   	    
+	 </div> 
+ 
+	  <div data-role="content"> 	
+	  	 <h3>Hi <span class="currentname"></span></h3>
+	  	 <h4>Select a child:</h4>
+	  	 <ul data-role="listview" id="childList">	  	 	
+	  	 </ul>	  	 
+	  </div>
+</div>
+
+<div data-role="page" id="signin">  
+  <div data-role="header" data-backbtn="false">  
+    <h1>Baby moment</h1>
+  </div>   
+  <div data-role="content"> 
+  <h3>Hello. Sign in</h3> 
+    <div class="class= ui-body ui-body-b"> 
+         <input type="text" name="signinEmail" id="signinEmail" placeholder="your e-mail address" value="" data-theme="a" /> 
+         <input type="password" name="signinPassword" id="signinPassword" placeholder="Password" value="" data-theme="a" />
+         <button type="submit" data-theme="a" id="btLogin">Sign in</button>              
+         <p>Not a member? <a href="#signup">Sign up for FREE</a></p>          
+ 		</div>
+    </div>          
+</div>  
+
+<div data-role="page" id="signup">  
+  <div data-role="header" data-backbtn="false">  
+    <h1>Baby moment account</h1>
+  </div>   
+  <div data-role="content"> 
+  <h3>Sign up or <a href="#signin">Sign in</a></h3> 
+    <div class="class= ui-body ui-body-b">
+    <input type="text" name="signupFirstname" id="signupFirstname" placeholder="First name" value="" data-theme="a" /> 
+    <input type="text" name="signupLastname" id="signupLastname" placeholder="Last name" value="" data-theme="a" />
+    <input type="text" name="signupEmail" id="signupEmail" placeholder="Email" value="" data-theme="a" />     
+    <input type="password" name="signupPassword" id="signupPassword" placeholder="Password" value="" data-theme="a" />                    
+      <button type="submit" data-theme="a" id="btJoin">Join</button>              
+ 		</div>
+    </div>          
+</div>  
+
+<div data-role="page" id="child">
+	<div data-role="header"> 	 
+	  <a data-rel="back" class="hideback" data-role="button" data-icon="arrow-l" data-iconpos="notext">back</a>	   	    	      
+	    <h1><span class="childName"></span></h1>  	     
+	    <a href="#settingsPop" data-rel="dialog" data-role="button" data-transition="slidedown" data-icon="gear" data-iconpos="notext">settings</a> 	     	    	   
+	 </div>
+	 <div data-role="content">
+	 <a id="btNewMoment" href="#newMomentPop" data-rel="dialog" data-iconpos="right" data-role="button" data-icon="plus">New</a>	 
+	  	<h3><span class="childName"></span> moments</h3>
+	  	<ul id="momentList" data-role="listview">	  
+	  	</ul>
+	 </div>
+</div>
+
+<div data-role="page" id="moment">
+	<div data-role="header">
+		<a data-rel="back" class="hideback" data-role="button" data-icon="arrow-l" data-iconpos="notext">back</a>	   	    	
+		<h1 id="momentHeader">Header</h1>
+	</div>
+	<div data-role="content">						
+		<h2 id="contentMomentDescription" class="momentDescription momentTitle">This is the moment descrption</h2>
+		<image id="momentImage" src="" style="max-width:100%;"/>				
+		<p class="at">Captured by <span id="momentCreatedBy"></span> on <span id="momentCreatedAt"></span> <br /><a href="" id="momentDownload">[download]</a></p>		
+		<br />
+		<!-- 
+		<ul data-role="listview">
+			<li data-role="list-divider">Comments</li>			
+			<li><p class="comment">This is a test comment
+			<div class="at">by Andy on 7/9/2009 at 5.00 pm.</div>
+			</p></li>			 
+					
+		</ul>
+		
+		<br />
+		<div>			
+			<textarea placeholder="Write a comment..." name="textarea" id="textarea"></textarea>
+			<a href="#" data-role="button" data-icon="plus" data-iconpos="right">add your comment</a> 
+		</div>
+		 -->
+	</div>
+</div>
+
+<div data-role="page" id="settingsPop">
+	<div data-role="header">
+		<h1>Settings</h1>
+	</div>
+	<div data-role="content">	
+		<input type="text" name="sharePopEmail" id="sharePopEmail" placeholder="e-mail address to share with" value="" data-theme="a" />
+		<a data-rel="back" id="btsharePopShare" data-role="button">Share</a>
+	</div>
+</div>
+
+
+<div data-role="page" id="addChildPop">
+	<div data-role="header">
+		<h1>Add a child</h1>
+	</div>
+	<div data-role="content">
+		<p><input type="text" id="childFirstName"  placeholder="First name" /></p>
+		<p><input type="text" id="childMiddleName"  placeholder="Middle Name" /></p>		
+		<p><input type="text" id="childLastName"  placeholder="Last Name" /></p>	
+		<p><input type="text" id="childDOB"  placeholder="Date of birth" /></p>	
+		<a data-rel="back" id="btAddChild" data-role="button">Add</a>
+	</div>
+</div>
+
+<div data-role="page" id="newMomentPop">
+	<div data-role="header">
+		<h1>Add a new moment</h1>
+	</div>
+	<div data-role="content">		
+		
+		<p><textarea cols="40" rows="8" id="tbMomentDescription"  placeholder="Describe the moment..."></textarea></p>
+		<label for="date">Captured by you on</label>
+		<input type="date" name="date" id="date" value=""  />	
+		<a data-role="button" id="btPhoto">Take a photo</a>
+ 		<a data-role="button" id="btAttachPhoto">Attach a photo</a>
+		<img id="takenPic" width="250" src="" />
+		<fieldset class="ui-grid-a">
+			<div class="ui-block-a"><a data-rel="back" id="btSaveMoment" data-role="button" data-theme="b">Save</a></div>
+			<div class="ui-block-b"><a data-rel="back" data-role="button">Cancel</a></div>	   
+		</fieldset>		
+	</div>
+</div>
+ 
+</body>
+
+</body>
+</html>
